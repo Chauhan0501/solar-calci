@@ -38,6 +38,7 @@ class SystemSizeEstimator extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Bill Type Selection
+/*
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -79,6 +80,7 @@ class SystemSizeEstimator extends StatelessWidget {
               ),
             ),
           ),
+*/
           const SizedBox(height: 16),
 
           // Electricity Rate

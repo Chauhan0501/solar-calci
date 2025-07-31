@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../controllers/solar_calculator_controller.dart';
 import '../constants/app_colors.dart';
 import 'system_size_estimator.dart';
 import 'subsidy_emi_calculator.dart';
@@ -20,8 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
     const SystemSizeEstimator(),
     const SubsidyEmiCalculator(),
-    // const RoiPaybackCalculator(),
-    // const LoadChartVisual(),
+    const RoiPaybackCalculator(),
+    const LoadChartVisual(),
   ];
 
   @override
