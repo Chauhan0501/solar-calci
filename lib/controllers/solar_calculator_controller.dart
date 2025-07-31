@@ -1,0 +1,174 @@
+import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'dart:math';
+import '../models/appliance_load.dart';
+import '../constants/app_colors.dart';
+
+class SolarCalculatorController extends GetxController {
+  // System Size Estimator
+  RxDouble dailyUsageRupees = 0.0.obs;
+  RxDouble monthlyUsageRupees = 0.0.obs;
+  RxBool isMonthlyBill = true.obs; // true for monthly, false for daily
+  RxDouble electricityRate = 7.0.obs; // rupees per unit
+  RxInt numberOfFans = 0.obs;
+  RxInt numberOfLights = 0.obs;
+  RxInt numberOfACs = 0.obs;
+  RxInt numberOfAppliances = 0.obs;
+  RxDouble calculatedSystemSize = 0.0.obs;
+
+  // Subsidy & EMI
+  RxDouble projectCost = 0.0.obs;
+  RxDouble subsidyPercentage = 30.0.obs; // PM Surya Ghar Yojana default
+  RxDouble emiTenure = 2.0.obs; // Default to 3 years, max 5 years
+  RxDouble interestRate = 7.0.obs;
+
+  // ROI & Payback
+  RxDouble monthlySavings = 0.0.obs;
+  RxDouble paybackPeriod = 0.0.obs;
+  RxDouble twentyFiveYearSavings = 0.0.obs;
+
+  // Load Chart Data
+  RxList<ApplianceLoad> applianceLoads = <ApplianceLoad>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    updateApplianceLoads();
+  }
+
+  void calculateSystemSize() {
+    // Calculate based on daily usage in rupees
+    double dailyUsageKWh;
+    if (isMonthlyBill.value) {
+      // Convert monthly bill to daily usage
+      dailyUsageKWh = (monthlyUsageRupees.value / 30) / electricityRate.value;
+    } else {
+      // Direct daily usage
+      dailyUsageKWh = dailyUsageRupees.value / electricityRate.value;
+    }
+
+    // Calculate based on appliances
+    double applianceLoad =
+        (numberOfFans.value * 75) + // 75W per fan
+        (numberOfLights.value * 15) + // 15W per LED light
+        (numberOfACs.value * 1500) + // 1500W per AC
+        (numberOfAppliances.value * 500); // 500W per appliance
+
+    // Convert to daily kWh (assuming 6 hours of usage)
+    double applianceDailyKWh = (applianceLoad * 6) / 1000;
+
+    // Use the higher of the two calculations
+    double requiredDailyKWh = dailyUsageKWh > applianceDailyKWh
+        ? dailyUsageKWh
+        : applianceDailyKWh;
+
+    // Solar system size (kW) = Daily kWh / (4.5 hours of peak sun * 0.75 efficiency)
+    calculatedSystemSize.value = requiredDailyKWh / (4.5 * 0.75);
+
+    // Calculate project cost (₹70,000 per kW)
+    projectCost.value = calculatedSystemSize.value * 70000;
+
+    // Calculate monthly savings
+    if (isMonthlyBill.value) {
+      monthlySavings.value = monthlyUsageRupees.value;
+    } else {
+      monthlySavings.value = dailyUsageRupees.value * 30;
+    }
+
+    // Calculate payback period
+    double netCost = projectCost.value * (1 - subsidyPercentage.value / 100);
+    paybackPeriod.value = netCost / (monthlySavings.value * 12);
+
+    // Calculate 25-year savings
+    twentyFiveYearSavings.value = (monthlySavings.value * 12 * 25) - netCost;
+
+    // Update appliance loads for chart
+    updateApplianceLoads();
+  }
+
+  void updateApplianceLoads() {
+    applianceLoads.value = [
+      ApplianceLoad('Fans', numberOfFans.value * 75, AppColors.fanColor),
+      ApplianceLoad('Lights', numberOfLights.value * 15, AppColors.lightColor),
+      ApplianceLoad('ACs', numberOfACs.value * 1500, AppColors.acColor),
+      ApplianceLoad(
+        'Appliances',
+        numberOfAppliances.value * 500,
+        AppColors.applianceColor,
+      ),
+    ];
+  }
+
+  double get emiAmount {
+    double netCost = projectCost.value * (1 - subsidyPercentage.value / 100);
+    double monthlyRate = interestRate.value / (12 * 100);
+    int totalMonths = (emiTenure.value * 12).round();
+
+    if (monthlyRate == 0) return netCost / totalMonths;
+
+    double emi =
+        netCost *
+        monthlyRate *
+        pow(1 + monthlyRate, totalMonths) /
+        (pow(1 + monthlyRate, totalMonths) - 1);
+    return emi;
+  }
+
+  double get totalSubsidy =>
+      projectCost.value * (subsidyPercentage.value / 100);
+  double get netProjectCost => projectCost.value - totalSubsidy;
+
+  // Methods to update values
+  void updateDailyUsage(String value) {
+    dailyUsageRupees.value = double.tryParse(value) ?? 0;
+    calculateSystemSize();
+  }
+
+  void updateMonthlyUsage(String value) {
+    monthlyUsageRupees.value = double.tryParse(value) ?? 0;
+    calculateSystemSize();
+  }
+
+  void updateElectricityRate(double value) {
+    electricityRate.value = value;
+    calculateSystemSize();
+  }
+
+  void updateBillType(bool isMonthly) {
+    isMonthlyBill.value = isMonthly;
+    calculateSystemSize();
+  }
+
+  void updateFans(int value) {
+    numberOfFans.value = value;
+    calculateSystemSize();
+  }
+
+  void updateLights(int value) {
+    numberOfLights.value = value;
+    calculateSystemSize();
+  }
+
+  void updateACs(int value) {
+    numberOfACs.value = value;
+    calculateSystemSize();
+  }
+
+  void updateAppliances(int value) {
+    numberOfAppliances.value = value;
+    calculateSystemSize();
+  }
+
+  void updateSubsidyPercentage(double value) {
+    subsidyPercentage.value = value;
+    calculateSystemSize();
+  }
+
+  void updateEmiTenure(double value) {
+    emiTenure.value = value;
+  }
+
+  void updateInterestRate(double value) {
+    interestRate.value = value;
+  }
+}
