@@ -26,6 +26,10 @@ class SolarCalculatorController extends GetxController {
   RxDouble paybackPeriod = 0.0.obs;
   RxDouble twentyFiveYearSavings = 0.0.obs;
 
+  // Environmental Impact
+  RxDouble co2Mitigated = 0.0.obs; // CO2 mitigated in kg per year
+  RxDouble treesPlanted = 0.0.obs; // Equivalent trees planted
+
   // Load Chart Data
   RxList<ApplianceLoad> applianceLoads = <ApplianceLoad>[].obs;
 
@@ -80,6 +84,15 @@ class SolarCalculatorController extends GetxController {
 
     // Calculate 25-year savings
     twentyFiveYearSavings.value = (monthlySavings.value * 12 * 25) - netCost;
+
+    // Calculate Environmental Impact
+    // 1 kW solar system generates ~4.5 kWh per day = 1642.5 kWh per year
+    // 1 kWh from grid produces ~0.82 kg CO2 (Indian grid average)
+    double annualKWhGenerated = calculatedSystemSize.value * 4.5 * 365;
+    co2Mitigated.value = annualKWhGenerated * 0.82; // kg CO2 per year
+
+    // 1 tree absorbs ~22 kg CO2 per year
+    treesPlanted.value = co2Mitigated.value / 22;
 
     // Update appliance loads for chart
     updateApplianceLoads();

@@ -533,6 +533,79 @@ class HomeScreen extends StatelessWidget {
                     '₹${NumberFormat('#,##,###').format(controller.twentyFiveYearSavings.value)}',
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Environmental Impact Section
+                const Text(
+                  'Environmental Impact',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Card(
+                        color: AppColors.solarGreenLight,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'CO₂ Mitigated',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Obx(
+                                () => Text(
+                                  '${NumberFormat('#,##,###').format(controller.co2Mitigated.value)} kg/year',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.solarGreen,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Card(
+                        color: AppColors.solarGreenLight,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'Trees Planted',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Obx(
+                                () => Text(
+                                  '${NumberFormat('#,##,###').format(controller.treesPlanted.value)} trees',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.solarGreen,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
