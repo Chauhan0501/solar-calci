@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 import 'dart:math';
 import '../models/appliance_load.dart';
 import '../constants/app_colors.dart';
@@ -18,8 +17,8 @@ class SolarCalculatorController extends GetxController {
 
   // Subsidy & EMI
   RxDouble projectCost = 0.0.obs;
-  RxDouble subsidyPercentage = 30.0.obs; // PM Surya Ghar Yojana default
-  RxDouble emiTenure = 2.0.obs; // Default to 3 years, max 5 years
+  RxDouble subsidyAmount = 108000.0.obs; // Default ₹1,08,000
+  RxDouble emiTenure = 2.0.obs; // Default to 2 years, max 5 years
   RxDouble interestRate = 7.0.obs;
 
   // ROI & Payback
@@ -76,7 +75,7 @@ class SolarCalculatorController extends GetxController {
     }
 
     // Calculate payback period
-    double netCost = projectCost.value * (1 - subsidyPercentage.value / 100);
+    double netCost = projectCost.value - subsidyAmount.value;
     paybackPeriod.value = netCost / (monthlySavings.value * 12);
 
     // Calculate 25-year savings
@@ -100,7 +99,7 @@ class SolarCalculatorController extends GetxController {
   }
 
   double get emiAmount {
-    double netCost = projectCost.value * (1 - subsidyPercentage.value / 100);
+    double netCost = projectCost.value - subsidyAmount.value;
     double monthlyRate = interestRate.value / (12 * 100);
     int totalMonths = (emiTenure.value * 12).round();
 
@@ -114,8 +113,7 @@ class SolarCalculatorController extends GetxController {
     return emi;
   }
 
-  double get totalSubsidy =>
-      projectCost.value * (subsidyPercentage.value / 100);
+  double get totalSubsidy => subsidyAmount.value;
   double get netProjectCost => projectCost.value - totalSubsidy;
 
   // Methods to update values
@@ -159,8 +157,8 @@ class SolarCalculatorController extends GetxController {
     calculateSystemSize();
   }
 
-  void updateSubsidyPercentage(double value) {
-    subsidyPercentage.value = value;
+  void updateSubsidyAmount(double value) {
+    subsidyAmount.value = value;
     calculateSystemSize();
   }
 

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary Colors
-  static const Color primary = Color(0xFFFF9800); // Orange
-  static const Color primaryLight = Color(0xFFFFB74D);
-  static const Color primaryDark = Color(0xFFF57C00);
+  static const Color primary = Color(0xFF128408); // Green
+  static const Color primaryLight = Color(0xFF4CAF50);
+  static const Color primaryDark = Color(0xFF0D5A05);
 
   // Secondary Colors
   static const Color secondary = Color(0xFF2196F3); // Blue
@@ -43,11 +43,11 @@ class AppColors {
   static const Color textHint = Color(0xFFBDBDBD);
 
   // Solar Calculator Specific Colors
-  static const Color solarOrange = Color(0xFFFF9800);
-  static const Color solarOrangeLight = Color(0xFFFFF3E0);
+  static const Color solarOrange = Color(0xFF128408); // Updated to green
+  static const Color solarOrangeLight = Color(0xFFE8F5E8); // Light green
   static const Color solarBlue = Color(0xFF2196F3);
   static const Color solarBlueLight = Color(0xFFE3F2FD);
-  static const Color solarGreen = Color(0xFF4CAF50);
+  static const Color solarGreen = Color(0xFF128408); // Updated to match primary
   static const Color solarGreenLight = Color(0xFFE8F5E8);
   static const Color solarPurple = Color(0xFF9C27B0);
   static const Color solarPurpleLight = Color(0xFFF3E5F5);

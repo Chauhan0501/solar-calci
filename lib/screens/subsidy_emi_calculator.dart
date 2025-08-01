@@ -78,6 +78,7 @@ class SubsidyEmiCalculator extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
+/*
                   Obx(
                     () => Row(
                       children: [
@@ -100,6 +101,7 @@ class SubsidyEmiCalculator extends StatelessWidget {
                       ],
                     ),
                   ),
+*/
 
                   const SizedBox(height: 16),
                   Obx(
