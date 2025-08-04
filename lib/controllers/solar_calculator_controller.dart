@@ -126,7 +126,12 @@ class SolarCalculatorController extends GetxController {
     return emi;
   }
 
-  double get totalSubsidy => subsidyAmount.value;
+  double get totalSubsidy {
+    if (calculatedSystemSize.value < 1.0) return 0.0;
+    if (calculatedSystemSize.value < 2.0) return 45000.0; // 1 kW tier
+    if (calculatedSystemSize.value < 3.0) return 90000.0; // 2 kW tier
+    return 108000.0; // 3 kW and above tier
+  }
   double get netProjectCost => projectCost.value - totalSubsidy;
 
   // Methods to update values

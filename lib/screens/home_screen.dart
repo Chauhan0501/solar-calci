@@ -323,36 +323,72 @@ class HomeScreen extends StatelessWidget {
                   () => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Subsidy Amount: ₹${NumberFormat('#,##,###').format(controller.subsidyAmount.value)}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          Expanded(
-                            child: Slider(
-                              value: controller.subsidyAmount.value,
-                              min: 0,
-                              max: 200000,
-                              divisions: 200,
-                              onChanged: (value) {
-                                controller.updateSubsidyAmount(value);
-                              },
-                            ),
-                          ),
-                        ],
+                      const Text(
+                        'Subsidy Eligibility (PM Surya Ghar Yojana)',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      // Text(
-                      //   'Subsidy Amount: ₹${NumberFormat('#,##,###').format(controller.totalSubsidy)}',
-                      //   style: const TextStyle(
-                      //     fontSize: 16,
-                      //     fontWeight: FontWeight.bold,
-                      //     color: AppColors.solarGreen,
-                      //   ),
-                      // ),
+                      _buildSubsidyTierInfo(controller),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: controller.calculatedSystemSize.value >= 1.0 
+                              ? AppColors.solarGreenLight 
+                              : AppColors.background,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: controller.calculatedSystemSize.value >= 1.0 
+                                ? AppColors.solarGreen 
+                                : AppColors.divider,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              controller.calculatedSystemSize.value >= 1.0 
+                                  ? Icons.check_circle 
+                                  : Icons.info_outline,
+                              color: controller.calculatedSystemSize.value >= 1.0 
+                                  ? AppColors.solarGreen 
+                                  : AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    controller.calculatedSystemSize.value >= 1.0
+                                        ? 'Subsidy Available'
+                                        : 'Subsidy Not Available',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: controller.calculatedSystemSize.value >= 1.0
+                                          ? AppColors.solarGreen
+                                          : AppColors.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    controller.calculatedSystemSize.value >= 1.0
+                                        ? '₹${NumberFormat('#,##,###').format(controller.totalSubsidy)}'
+                                        : 'Minimum 1 kW system required',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: controller.calculatedSystemSize.value >= 1.0
+                                          ? AppColors.solarGreen
+                                          : AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -655,6 +691,73 @@ class HomeScreen extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubsidyTierInfo(SolarCalculatorController controller) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Subsidy Tiers:',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _buildTierItem('1 kW', '₹45,000', AppColors.solarBlue),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildTierItem('2 kW', '₹90,000', AppColors.solarGreen),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildTierItem('3+ kW', '₹1,08,000', AppColors.solarOrange),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTierItem(String size, String amount, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            size,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            amount,
+            style: TextStyle(
+              fontSize: 10,
+              color: color,
+            ),
           ),
         ],
       ),
