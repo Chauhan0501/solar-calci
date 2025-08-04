@@ -68,8 +68,16 @@ class SolarCalculatorController extends GetxController {
     // Solar system size (kW) = Daily kWh / (4.5 hours of peak sun * 0.75 efficiency)
     calculatedSystemSize.value = requiredDailyKWh / (4.5 * 0.75);
 
-    // Calculate project cost (₹70,000 per kW)
-    projectCost.value = calculatedSystemSize.value * 70000;
+    // Calculate project cost based on tiered pricing
+    if (calculatedSystemSize.value <= 3.0) {
+      // Up to 3 kW: ₹60 per watt
+      projectCost.value = (calculatedSystemSize.value * 1000 * 60)
+          .roundToDouble();
+    } else {
+      // Above 3 kW: ₹55 per watt
+      projectCost.value = (calculatedSystemSize.value * 1000 * 55)
+          .roundToDouble();
+    }
 
     // Calculate monthly savings
     if (isMonthlyBill.value) {
@@ -79,7 +87,7 @@ class SolarCalculatorController extends GetxController {
     }
 
     // Calculate payback period
-    double netCost = projectCost.value - subsidyAmount.value;
+    double netCost = projectCost.value - totalSubsidy;
     paybackPeriod.value = netCost / (monthlySavings.value * 12);
 
     // Calculate 25-year savings
@@ -112,7 +120,7 @@ class SolarCalculatorController extends GetxController {
   }
 
   double get emiAmount {
-    double netCost = projectCost.value - subsidyAmount.value;
+    double netCost = projectCost.value - totalSubsidy;
     double monthlyRate = interestRate.value / (12 * 100);
     int totalMonths = (emiTenure.value * 12).round();
 
