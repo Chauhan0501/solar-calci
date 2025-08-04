@@ -97,18 +97,34 @@ class SolarCalculatorController extends GetxController {
     }
 
     // Calculate monthly savings
-    if (isMonthlyBill.value) {
-      monthlySavings.value = monthlyUsageRupees.value;
+    if (dailyUsageKWh > 0) {
+      // If bill data is provided, use it
+      if (isMonthlyBill.value) {
+        monthlySavings.value = monthlyUsageRupees.value;
+      } else {
+        monthlySavings.value = dailyUsageRupees.value * 30;
+      }
     } else {
-      monthlySavings.value = dailyUsageRupees.value * 30;
+      // If no bill data but appliances are added, calculate savings based on solar generation
+      // 1 kW solar system generates ~4.5 kWh per day = 135 kWh per month
+      double monthlyKWhGenerated = calculatedSystemSize.value * 4.5 * 30;
+      monthlySavings.value = monthlyKWhGenerated * electricityRate.value;
     }
 
     // Calculate payback period
     double netCost = projectCost.value - totalSubsidy;
-    paybackPeriod.value = netCost / (monthlySavings.value * 12);
+    if (monthlySavings.value > 0) {
+      paybackPeriod.value = netCost / (monthlySavings.value * 12);
+    } else {
+      paybackPeriod.value = 0.0; // No savings, no payback
+    }
 
     // Calculate 25-year savings
-    twentyFiveYearSavings.value = (monthlySavings.value * 12 * 25) - netCost;
+    if (monthlySavings.value > 0) {
+      twentyFiveYearSavings.value = (monthlySavings.value * 12 * 25) - netCost;
+    } else {
+      twentyFiveYearSavings.value = 0.0; // No savings
+    }
 
     // Calculate Environmental Impact
     // 1 kW solar system generates ~4.5 kWh per day = 1642.5 kWh per year
