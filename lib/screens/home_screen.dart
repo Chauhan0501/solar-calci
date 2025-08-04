@@ -206,32 +206,142 @@ class HomeScreen extends StatelessWidget {
             Obx(
               () => Column(
                 children: [
-                  _buildApplianceInput(
-                    'Fans',
-                    controller.numberOfFans.value,
-                    (value) => controller.updateFans(value),
-                    Icons.air,
+                  // Row 1: Lighting
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'Tubelights (18W)',
+                          controller.numberOfTubelights.value,
+                          (value) => controller.updateTubelights(value),
+                          Icons.lightbulb_outline,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'LED Bulbs (9W)',
+                          controller.numberOfLights.value,
+                          (value) => controller.updateLights(value),
+                          Icons.lightbulb,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
-                  _buildApplianceInput(
-                    'LED Lights',
-                    controller.numberOfLights.value,
-                    (value) => controller.updateLights(value),
-                    Icons.lightbulb,
+                  // Row 2: Fans
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'Ceiling Fans (75W)',
+                          controller.numberOfFans.value,
+                          (value) => controller.updateFans(value),
+                          Icons.air,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'Wall Fans (55W)',
+                          controller.numberOfWallFans.value,
+                          (value) => controller.updateWallFans(value),
+                          Icons.air,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
-                  _buildApplianceInput(
-                    'Air Conditioners',
-                    controller.numberOfACs.value,
-                    (value) => controller.updateACs(value),
-                    Icons.ac_unit,
+                  // Row 3: Cooling
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'Air Coolers (150W)',
+                          controller.numberOfAirCoolers.value,
+                          (value) => controller.updateAirCoolers(value),
+                          Icons.ac_unit,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'ACs (1.5T, 1500W)',
+                          controller.numberOfACs.value,
+                          (value) => controller.updateACs(value),
+                          Icons.ac_unit,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
-                  _buildApplianceInput(
-                    'Other Appliances',
-                    controller.numberOfAppliances.value,
-                    (value) => controller.updateAppliances(value),
-                    Icons.devices,
+                  // Row 4: Entertainment & Kitchen
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'TVs (32", 60W)',
+                          controller.numberOfTVs.value,
+                          (value) => controller.updateTVs(value),
+                          Icons.tv,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'Refrigerators (180W)',
+                          controller.numberOfRefrigerators.value,
+                          (value) => controller.updateRefrigerators(value),
+                          Icons.kitchen,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Row 5: Laundry & Water
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'Washing Machines (500W)',
+                          controller.numberOfAppliances.value,
+                          (value) => controller.updateAppliances(value),
+                          Icons.local_laundry_service,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'Water Purifiers (25W)',
+                          controller.numberOfWaterPurifiers.value,
+                          (value) => controller.updateWaterPurifiers(value),
+                          Icons.water_drop,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Row 6: Pumps
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'Surface Pumps (750W)',
+                          controller.numberOfSurfacePumps.value,
+                          (value) => controller.updateSurfacePumps(value),
+                          Icons.water,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildApplianceInput(
+                          'Submersible Pumps (1500W)',
+                          controller.numberOfSubmersiblePumps.value,
+                          (value) => controller.updateSubmersiblePumps(value),
+                          Icons.water,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

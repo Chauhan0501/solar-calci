@@ -9,10 +9,19 @@ class SolarCalculatorController extends GetxController {
   RxDouble monthlyUsageRupees = 0.0.obs;
   RxBool isMonthlyBill = true.obs; // true for monthly, false for daily
   RxDouble electricityRate = 7.0.obs; // rupees per unit
+  // Appliance counts
   RxInt numberOfFans = 0.obs;
   RxInt numberOfLights = 0.obs;
   RxInt numberOfACs = 0.obs;
   RxInt numberOfAppliances = 0.obs;
+  RxInt numberOfTubelights = 0.obs;
+  RxInt numberOfWallFans = 0.obs;
+  RxInt numberOfAirCoolers = 0.obs;
+  RxInt numberOfTVs = 0.obs;
+  RxInt numberOfRefrigerators = 0.obs;
+  RxInt numberOfWaterPurifiers = 0.obs;
+  RxInt numberOfSurfacePumps = 0.obs;
+  RxInt numberOfSubmersiblePumps = 0.obs;
   RxDouble calculatedSystemSize = 0.0.obs;
 
   // Subsidy & EMI
@@ -50,12 +59,20 @@ class SolarCalculatorController extends GetxController {
       dailyUsageKWh = dailyUsageRupees.value / electricityRate.value;
     }
 
-    // Calculate based on appliances
+    // Calculate based on all appliances
     double applianceLoad =
-        (numberOfFans.value * 75) + // 75W per fan
-        (numberOfLights.value * 15) + // 15W per LED light
-        (numberOfACs.value * 1500) + // 1500W per AC
-        (numberOfAppliances.value * 500); // 500W per appliance
+        (numberOfTubelights.value * 18) + // Tubelights: 18W
+        (numberOfLights.value * 9) + // LED Bulbs: 9W
+        (numberOfFans.value * 75) + // Ceiling Fans: 75W
+        (numberOfWallFans.value * 55) + // Wall Fans: 55W
+        (numberOfAirCoolers.value * 150) + // Air Coolers: 150W
+        (numberOfTVs.value * 60) + // TVs: 60W
+        (numberOfRefrigerators.value * 180) + // Refrigerators: 180W
+        (numberOfAppliances.value * 500) + // Washing Machines: 500W
+        (numberOfWaterPurifiers.value * 25) + // Water Purifiers: 25W
+        (numberOfSurfacePumps.value * 750) + // Surface Pumps: 750W
+        (numberOfSubmersiblePumps.value * 1500) + // Submersible Pumps: 1500W
+        (numberOfACs.value * 1500); // Air Conditioners: 1500W
 
     // Convert to daily kWh (assuming 6 hours of usage)
     double applianceDailyKWh = (applianceLoad * 6) / 1000;
@@ -108,14 +125,66 @@ class SolarCalculatorController extends GetxController {
 
   void updateApplianceLoads() {
     applianceLoads.value = [
-      ApplianceLoad('Fans', numberOfFans.value * 75, AppColors.fanColor),
-      ApplianceLoad('Lights', numberOfLights.value * 15, AppColors.lightColor),
-      ApplianceLoad('ACs', numberOfACs.value * 1500, AppColors.acColor),
       ApplianceLoad(
-        'Appliances',
+        'Tubelights (LED/Tube)',
+        numberOfTubelights.value * 18,
+        AppColors.lightColor,
+      ), // 18W
+      ApplianceLoad(
+        'LED Bulbs',
+        numberOfLights.value * 9,
+        AppColors.lightColor,
+      ), // 9W
+      ApplianceLoad(
+        'Ceiling Fans',
+        numberOfFans.value * 75,
+        AppColors.fanColor,
+      ), // 75W
+      ApplianceLoad(
+        'Wall Fans',
+        numberOfWallFans.value * 55,
+        AppColors.fanColor,
+      ), // 55W
+      ApplianceLoad(
+        'Air Coolers',
+        numberOfAirCoolers.value * 150,
+        AppColors.acColor,
+      ), // 150W
+      ApplianceLoad(
+        'TVs (LED, 32")',
+        numberOfTVs.value * 60,
+        AppColors.applianceColor,
+      ), // 60W
+      ApplianceLoad(
+        'Refrigerators',
+        numberOfRefrigerators.value * 180,
+        AppColors.applianceColor,
+      ), // 180W
+      ApplianceLoad(
+        'Washing Machines',
         numberOfAppliances.value * 500,
         AppColors.applianceColor,
-      ),
+      ), // 500W
+      ApplianceLoad(
+        'Water Purifiers',
+        numberOfWaterPurifiers.value * 25,
+        AppColors.applianceColor,
+      ), // 25W
+      ApplianceLoad(
+        'Surface Water Pumps',
+        numberOfSurfacePumps.value * 750,
+        AppColors.applianceColor,
+      ), // 750W
+      ApplianceLoad(
+        'Submersible Pumps',
+        numberOfSubmersiblePumps.value * 1500,
+        AppColors.applianceColor,
+      ), // 1500W
+      ApplianceLoad(
+        'Air Conditioners (1.5T)',
+        numberOfACs.value * 1500,
+        AppColors.acColor,
+      ), // 1500W
     ];
   }
 
@@ -140,6 +209,7 @@ class SolarCalculatorController extends GetxController {
     if (calculatedSystemSize.value < 3.0) return 90000.0; // 2 kW tier
     return 108000.0; // 3 kW and above tier
   }
+
   double get netProjectCost => projectCost.value - totalSubsidy;
 
   // Methods to update values
@@ -180,6 +250,46 @@ class SolarCalculatorController extends GetxController {
 
   void updateAppliances(int value) {
     numberOfAppliances.value = value;
+    calculateSystemSize();
+  }
+
+  void updateTubelights(int value) {
+    numberOfTubelights.value = value;
+    calculateSystemSize();
+  }
+
+  void updateWallFans(int value) {
+    numberOfWallFans.value = value;
+    calculateSystemSize();
+  }
+
+  void updateAirCoolers(int value) {
+    numberOfAirCoolers.value = value;
+    calculateSystemSize();
+  }
+
+  void updateTVs(int value) {
+    numberOfTVs.value = value;
+    calculateSystemSize();
+  }
+
+  void updateRefrigerators(int value) {
+    numberOfRefrigerators.value = value;
+    calculateSystemSize();
+  }
+
+  void updateWaterPurifiers(int value) {
+    numberOfWaterPurifiers.value = value;
+    calculateSystemSize();
+  }
+
+  void updateSurfacePumps(int value) {
+    numberOfSurfacePumps.value = value;
+    calculateSystemSize();
+  }
+
+  void updateSubmersiblePumps(int value) {
+    numberOfSubmersiblePumps.value = value;
     calculateSystemSize();
   }
 
