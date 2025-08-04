@@ -12,6 +12,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<SolarCalculatorController>();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -22,52 +24,16 @@ class HomeScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(isMobile ? 12 : 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Section
-            /*
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(Icons.solar_power, size: 64, color: AppColors.primary),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Solar System Calculator',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Calculate your perfect solar system size and savings',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: AppColors.textSecondary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-*/
-            const SizedBox(height: 24),
-
-            // System Size Estimator Section
-            _buildSystemSizeSection(controller),
-            const SizedBox(height: 24),
-
-            // Results Section (shown after calculation)
+            const SizedBox(height: 16),
+            _buildSystemSizeSection(controller, isMobile),
+            const SizedBox(height: 16),
             Obx(
               () => controller.calculatedSystemSize.value > 0
-                  ? _buildResultsSection(controller)
+                  ? _buildResultsSection(controller, isMobile)
                   : const SizedBox.shrink(),
             ),
           ],
@@ -76,62 +42,26 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSystemSizeSection(SolarCalculatorController controller) {
+  Widget _buildSystemSizeSection(
+    SolarCalculatorController controller,
+    bool isMobile,
+  ) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(isMobile ? 16 : 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Calculate Your Solar System Size',
+              'System Size Estimator',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Enter your electricity details to get started',
-              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 24),
-
-            // Bill Type Selection
-            // const Text(
-            //   'Bill Type',
-            //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            // ),
-            // const SizedBox(height: 8),
-            // Obx(
-            //   () => Row(
-            //     children: [
-            //       Expanded(
-            //         child: RadioListTile<bool>(
-            //           title: const Text('Daily Bill'),
-            //           value: false,
-            //           groupValue: controller.isMonthlyBill.value,
-            //           onChanged: (value) {
-            //             controller.updateBillType(value!);
-            //           },
-            //         ),
-            //       ),
-            //       Expanded(
-            //         child: RadioListTile<bool>(
-            //           title: const Text('Monthly Bill'),
-            //           value: true,
-            //           groupValue: controller.isMonthlyBill.value,
-            //           onChanged: (value) {
-            //             controller.updateBillType(value!);
-            //           },
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
             const SizedBox(height: 16),
 
             // Electricity Rate
             const Text(
-              'Electricity Rate',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Electricity Rate per Unit',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Obx(
@@ -147,8 +77,8 @@ class HomeScreen extends StatelessWidget {
                     child: Slider(
                       value: controller.electricityRate.value,
                       min: 5,
-                      max: 12,
-                      divisions: 14,
+                      max: 15,
+                      divisions: 20,
                       onChanged: (value) {
                         controller.updateElectricityRate(value);
                       },
@@ -159,40 +89,58 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Electricity Bill Input
+            // Bill Input Section
+            const Text(
+              'Your Electricity Bill',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            // const SizedBox(height: 8),
+            //
+            // // Bill Type Toggle
+            // Obx(
+            //   () => Row(
+            //     children: [
+            //       Expanded(
+            //         child: ChoiceChip(
+            //           label: const Text('Monthly Bill'),
+            //           selected: controller.isMonthlyBill.value,
+            //           onSelected: (selected) {
+            //             if (selected) controller.updateBillType(true);
+            //           },
+            //         ),
+            //       ),
+            //       const SizedBox(width: 8),
+            //       Expanded(
+            //         child: ChoiceChip(
+            //           label: const Text('Daily Bill'),
+            //           selected: !controller.isMonthlyBill.value,
+            //           onSelected: (selected) {
+            //             if (selected) controller.updateBillType(false);
+            //           },
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            const SizedBox(height: 16),
+            // Bill Amount Input
             Obx(
-              () => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    controller.isMonthlyBill.value
-                        ? 'Monthly Electricity Bill (₹)'
-                        : 'Daily Electricity Bill (₹)',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      hintText: controller.isMonthlyBill.value
-                          ? 'Enter monthly electricity bill in rupees'
-                          : 'Enter daily electricity bill in rupees',
-                      filled: true,
-                      fillColor: AppColors.background,
-                    ),
-                    onChanged: (value) {
-                      if (controller.isMonthlyBill.value) {
-                        controller.updateMonthlyUsage(value);
-                      } else {
-                        controller.updateDailyUsage(value);
-                      }
-                    },
-                  ),
-                ],
+              () => TextField(
+                decoration: InputDecoration(
+                  labelText: controller.isMonthlyBill.value
+                      ? 'Monthly Bill Amount (₹)'
+                      : 'Daily Bill Amount (₹)',
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.currency_rupee),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  if (controller.isMonthlyBill.value) {
+                    controller.updateMonthlyUsage(value);
+                  } else {
+                    // controller.updateDailyUsage(value);
+                  }
+                },
               ),
             ),
             const SizedBox(height: 24),
@@ -207,142 +155,243 @@ class HomeScreen extends StatelessWidget {
               () => Column(
                 children: [
                   // Row 1: Lighting
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'Tubelights (18W)',
-                          controller.numberOfTubelights.value,
-                          (value) => controller.updateTubelights(value),
-                          Icons.lightbulb_outline,
+                  if (isMobile) ...[
+                    _buildApplianceInput(
+                      'Tubelights (18W)',
+                      controller.numberOfTubelights.value,
+                      (value) => controller.updateTubelights(value),
+                      Icons.lightbulb_outline,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildApplianceInput(
+                      'LED Bulbs (9W)',
+                      controller.numberOfLights.value,
+                      (value) => controller.updateLights(value),
+                      Icons.lightbulb,
+                    ),
+                  ] else ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'Tubelights (18W)',
+                            controller.numberOfTubelights.value,
+                            (value) => controller.updateTubelights(value),
+                            Icons.lightbulb_outline,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'LED Bulbs (9W)',
-                          controller.numberOfLights.value,
-                          (value) => controller.updateLights(value),
-                          Icons.lightbulb,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'LED Bulbs (9W)',
+                            controller.numberOfLights.value,
+                            (value) => controller.updateLights(value),
+                            Icons.lightbulb,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 12),
+
                   // Row 2: Fans
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'Ceiling Fans (75W)',
-                          controller.numberOfFans.value,
-                          (value) => controller.updateFans(value),
-                          Icons.air,
+                  if (isMobile) ...[
+                    _buildApplianceInput(
+                      'Ceiling Fans (75W)',
+                      controller.numberOfFans.value,
+                      (value) => controller.updateFans(value),
+                      Icons.air,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildApplianceInput(
+                      'Wall Fans (55W)',
+                      controller.numberOfWallFans.value,
+                      (value) => controller.updateWallFans(value),
+                      Icons.air,
+                    ),
+                  ] else ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'Ceiling Fans (75W)',
+                            controller.numberOfFans.value,
+                            (value) => controller.updateFans(value),
+                            Icons.air,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'Wall Fans (55W)',
-                          controller.numberOfWallFans.value,
-                          (value) => controller.updateWallFans(value),
-                          Icons.air,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'Wall Fans (55W)',
+                            controller.numberOfWallFans.value,
+                            (value) => controller.updateWallFans(value),
+                            Icons.air,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 12),
+
                   // Row 3: Cooling
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'Air Coolers (150W)',
-                          controller.numberOfAirCoolers.value,
-                          (value) => controller.updateAirCoolers(value),
-                          Icons.ac_unit,
+                  if (isMobile) ...[
+                    _buildApplianceInput(
+                      'Air Coolers (150W)',
+                      controller.numberOfAirCoolers.value,
+                      (value) => controller.updateAirCoolers(value),
+                      Icons.ac_unit,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildApplianceInput(
+                      'ACs (1.5T, 1500W)',
+                      controller.numberOfACs.value,
+                      (value) => controller.updateACs(value),
+                      Icons.ac_unit,
+                    ),
+                  ] else ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'Air Coolers (150W)',
+                            controller.numberOfAirCoolers.value,
+                            (value) => controller.updateAirCoolers(value),
+                            Icons.ac_unit,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'ACs (1.5T, 1500W)',
-                          controller.numberOfACs.value,
-                          (value) => controller.updateACs(value),
-                          Icons.ac_unit,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'ACs (1.5T, 1500W)',
+                            controller.numberOfACs.value,
+                            (value) => controller.updateACs(value),
+                            Icons.ac_unit,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 12),
+
                   // Row 4: Entertainment & Kitchen
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'TVs (32", 60W)',
-                          controller.numberOfTVs.value,
-                          (value) => controller.updateTVs(value),
-                          Icons.tv,
+                  if (isMobile) ...[
+                    _buildApplianceInput(
+                      'TVs (32", 60W)',
+                      controller.numberOfTVs.value,
+                      (value) => controller.updateTVs(value),
+                      Icons.tv,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildApplianceInput(
+                      'Refrigerators (180W)',
+                      controller.numberOfRefrigerators.value,
+                      (value) => controller.updateRefrigerators(value),
+                      Icons.kitchen,
+                    ),
+                  ] else ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'TVs (32", 60W)',
+                            controller.numberOfTVs.value,
+                            (value) => controller.updateTVs(value),
+                            Icons.tv,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'Refrigerators (180W)',
-                          controller.numberOfRefrigerators.value,
-                          (value) => controller.updateRefrigerators(value),
-                          Icons.kitchen,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'Refrigerators (180W)',
+                            controller.numberOfRefrigerators.value,
+                            (value) => controller.updateRefrigerators(value),
+                            Icons.kitchen,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 12),
+
                   // Row 5: Laundry & Water
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'Washing Machines (500W)',
-                          controller.numberOfAppliances.value,
-                          (value) => controller.updateAppliances(value),
-                          Icons.local_laundry_service,
+                  if (isMobile) ...[
+                    _buildApplianceInput(
+                      'Washing Machines (500W)',
+                      controller.numberOfAppliances.value,
+                      (value) => controller.updateAppliances(value),
+                      Icons.local_laundry_service,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildApplianceInput(
+                      'Water Purifiers (25W)',
+                      controller.numberOfWaterPurifiers.value,
+                      (value) => controller.updateWaterPurifiers(value),
+                      Icons.water_drop,
+                    ),
+                  ] else ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'Washing Machines (500W)',
+                            controller.numberOfAppliances.value,
+                            (value) => controller.updateAppliances(value),
+                            Icons.local_laundry_service,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'Water Purifiers (25W)',
-                          controller.numberOfWaterPurifiers.value,
-                          (value) => controller.updateWaterPurifiers(value),
-                          Icons.water_drop,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'Water Purifiers (25W)',
+                            controller.numberOfWaterPurifiers.value,
+                            (value) => controller.updateWaterPurifiers(value),
+                            Icons.water_drop,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 12),
+
                   // Row 6: Pumps
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'Surface Pumps (750W)',
-                          controller.numberOfSurfacePumps.value,
-                          (value) => controller.updateSurfacePumps(value),
-                          Icons.water,
+                  if (isMobile) ...[
+                    _buildApplianceInput(
+                      'Surface Pumps (750W)',
+                      controller.numberOfSurfacePumps.value,
+                      (value) => controller.updateSurfacePumps(value),
+                      Icons.water,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildApplianceInput(
+                      'Submersible Pumps (1500W)',
+                      controller.numberOfSubmersiblePumps.value,
+                      (value) => controller.updateSubmersiblePumps(value),
+                      Icons.water,
+                    ),
+                  ] else ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'Surface Pumps (750W)',
+                            controller.numberOfSurfacePumps.value,
+                            (value) => controller.updateSurfacePumps(value),
+                            Icons.water,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildApplianceInput(
-                          'Submersible Pumps (1500W)',
-                          controller.numberOfSubmersiblePumps.value,
-                          (value) => controller.updateSubmersiblePumps(value),
-                          Icons.water,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildApplianceInput(
+                            'Submersible Pumps (1500W)',
+                            controller.numberOfSubmersiblePumps.value,
+                            (value) => controller.updateSubmersiblePumps(value),
+                            Icons.water,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -352,62 +401,64 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildResultsSection(SolarCalculatorController controller) {
+  Widget _buildResultsSection(
+    SolarCalculatorController controller,
+    bool isMobile,
+  ) {
     return Column(
       children: [
-        // System Size Result
+        // System Size Result Card
         Card(
-          color: AppColors.solarOrangeLight,
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(isMobile ? 16 : 24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Recommended Solar System',
+                  'Recommended System Size',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.solar_power,
-                      size: 48,
-                      color: AppColors.solarOrange,
+                Obx(
+                  () => Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.solarGreenLight,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.solarGreen),
                     ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Obx(
-                          () => Text(
-                            '${controller.calculatedSystemSize.value.toStringAsFixed(2)} kW',
-                            style: const TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.solarOrange,
-                            ),
-                          ),
+                        Icon(
+                          Icons.solar_power,
+                          size: isMobile ? 32 : 48,
+                          color: AppColors.solarGreen,
                         ),
-                        const Text(
-                          'Solar System',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: AppColors.textSecondary,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Solar System Size',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${controller.calculatedSystemSize.value.toStringAsFixed(2)} kW',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.solarGreen,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Obx(
-                  () => Text(
-                    'Estimated Project Cost: ₹${NumberFormat('#,##,###').format(controller.projectCost.value)}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -420,7 +471,7 @@ class HomeScreen extends StatelessWidget {
         // Subsidy & EMI Section
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(isMobile ? 16 : 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -434,8 +485,7 @@ class HomeScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Subsidy Eligibility',
-                        // 'Subsidy Eligibility (PM Surya Ghar Yojana)',
+                        'Subsidy Eligibility (PM Surya Ghar Yojana)',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -516,10 +566,43 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                // EMI Options
+                const Text(
+                  'EMI Options',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+
+                // EMI Tenure
                 Obx(
                   () => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'EMI Tenure: ${controller.emiTenure.value.toInt()} years',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                          Expanded(
+                            child: Slider(
+                              value: controller.emiTenure.value,
+                              min: 1,
+                              max: 5,
+                              divisions: 4,
+                              onChanged: (value) {
+                                controller.updateEmiTenure(value);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Interest Rate
                       Row(
                         children: [
                           Expanded(
@@ -542,42 +625,57 @@ class HomeScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      // Text(
-                      //   'Monthly EMI: ₹${NumberFormat('#,##,###').format(controller.emiAmount)}',
-                      //   style: const TextStyle(
-                      //     fontSize: 16,
-                      //     fontWeight: FontWeight.bold,
-                      //     color: AppColors.solarBlue,
-                      //   ),
-                      // ),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.solarBlueLight,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: AppColors.solarBlue),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.account_balance,
+                              color: AppColors.solarBlue,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Monthly EMI',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '₹${NumberFormat('#,##,###').format(controller.emiAmount)}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.solarBlue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
-                Obx(
-                  () => Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'EMI Tenure: ${controller.emiTenure.value.toInt()} years',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      Expanded(
-                        child: Slider(
-                          value: controller.emiTenure.value,
-                          min: 1,
-                          max: 5,
-                          divisions: 4,
-                          onChanged: (value) {
-                            controller.updateEmiTenure(value);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+
+                // Cost Summary
+                const Text(
+                  'Cost Summary',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 Obx(
                   () => _buildSummaryRow(
                     'Total Project Cost',
@@ -611,7 +709,7 @@ class HomeScreen extends StatelessWidget {
         // ROI & Savings Section
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(isMobile ? 16 : 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -620,72 +718,136 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Card(
-                        color: AppColors.solarGreenLight,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              const Text(
-                                'Monthly Savings',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+
+                // Savings Cards
+                if (isMobile) ...[
+                  Obx(
+                    () => Card(
+                      color: AppColors.solarGreenLight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Monthly Savings',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(height: 8),
-                              Obx(
-                                () => Text(
-                                  '₹${NumberFormat('#,##,###').format(controller.monthlySavings.value)}',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.solarGreen,
-                                  ),
-                                ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '₹${NumberFormat('#,##,###').format(controller.monthlySavings.value)}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.solarGreen,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Card(
-                        color: AppColors.solarBlueLight,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              const Text(
-                                'Payback Period',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                  ),
+                  const SizedBox(height: 12),
+                  Obx(
+                    () => Card(
+                      color: AppColors.solarBlueLight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Payback Period',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(height: 8),
-                              Obx(
-                                () => Text(
-                                  '${controller.paybackPeriod.value.toStringAsFixed(1)} years',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.solarBlue,
-                                  ),
-                                ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${controller.paybackPeriod.value.toStringAsFixed(1)} years',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.solarBlue,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ] else ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Obx(
+                          () => Card(
+                            color: AppColors.solarGreenLight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Monthly Savings',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '₹${NumberFormat('#,##,###').format(controller.monthlySavings.value)}',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.solarGreen,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Obx(
+                          () => Card(
+                            color: AppColors.solarBlueLight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Payback Period',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '${controller.paybackPeriod.value.toStringAsFixed(1)} years',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.solarBlue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 16),
+
+                // 25-Year Savings
                 Obx(
                   () => _buildSummaryRow(
                     '25-Year Total Savings',
@@ -700,71 +862,133 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Card(
-                        color: AppColors.solarGreenLight,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              const Text(
-                                'CO₂ Mitigated',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+
+                // Environmental Cards
+                if (isMobile) ...[
+                  Obx(
+                    () => Card(
+                      color: AppColors.solarGreenLight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'CO₂ Mitigated',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(height: 8),
-                              Obx(
-                                () => Text(
-                                  '${NumberFormat('#,##,###').format(controller.co2Mitigated.value)} kg/year',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.solarGreen,
-                                  ),
-                                ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${NumberFormat('#,##,###').format(controller.co2Mitigated.value)} kg/year',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.solarGreen,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Card(
-                        color: AppColors.solarGreenLight,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              const Text(
-                                'Trees Planted',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                  ),
+                  const SizedBox(height: 12),
+                  Obx(
+                    () => Card(
+                      color: AppColors.solarGreenLight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Trees Planted',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(height: 8),
-                              Obx(
-                                () => Text(
-                                  '${NumberFormat('#,##,###').format(controller.treesPlanted.value)} trees',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.solarGreen,
-                                  ),
-                                ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${NumberFormat('#,##,###').format(controller.treesPlanted.value)} trees',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.solarGreen,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ] else ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Obx(
+                          () => Card(
+                            color: AppColors.solarGreenLight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'CO₂ Mitigated',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '${NumberFormat('#,##,###').format(controller.co2Mitigated.value)} kg/year',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.solarGreen,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Obx(
+                          () => Card(
+                            color: AppColors.solarGreenLight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Trees Planted',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '${NumberFormat('#,##,###').format(controller.treesPlanted.value)} trees',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.solarGreen,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
