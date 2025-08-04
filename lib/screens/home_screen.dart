@@ -324,8 +324,12 @@ class HomeScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Subsidy Eligibility (PM Surya Ghar Yojana)',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        'Subsidy Eligibility',
+                        // 'Subsidy Eligibility (PM Surya Ghar Yojana)',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       _buildSubsidyTierInfo(controller),
@@ -333,24 +337,25 @@ class HomeScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: controller.calculatedSystemSize.value >= 1.0 
-                              ? AppColors.solarGreenLight 
+                          color: controller.calculatedSystemSize.value >= 1.0
+                              ? AppColors.solarGreenLight
                               : AppColors.background,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: controller.calculatedSystemSize.value >= 1.0 
-                                ? AppColors.solarGreen 
+                            color: controller.calculatedSystemSize.value >= 1.0
+                                ? AppColors.solarGreen
                                 : AppColors.divider,
                           ),
                         ),
                         child: Row(
                           children: [
                             Icon(
-                              controller.calculatedSystemSize.value >= 1.0 
-                                  ? Icons.check_circle 
+                              controller.calculatedSystemSize.value >= 1.0
+                                  ? Icons.check_circle
                                   : Icons.info_outline,
-                              color: controller.calculatedSystemSize.value >= 1.0 
-                                  ? AppColors.solarGreen 
+                              color:
+                                  controller.calculatedSystemSize.value >= 1.0
+                                  ? AppColors.solarGreen
                                   : AppColors.textSecondary,
                             ),
                             const SizedBox(width: 12),
@@ -365,7 +370,11 @@ class HomeScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: controller.calculatedSystemSize.value >= 1.0
+                                      color:
+                                          controller
+                                                  .calculatedSystemSize
+                                                  .value >=
+                                              1.0
                                           ? AppColors.solarGreen
                                           : AppColors.textSecondary,
                                     ),
@@ -378,7 +387,11 @@ class HomeScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: controller.calculatedSystemSize.value >= 1.0
+                                      color:
+                                          controller
+                                                  .calculatedSystemSize
+                                                  .value >=
+                                              1.0
                                           ? AppColors.solarGreen
                                           : AppColors.textSecondary,
                                     ),
@@ -408,9 +421,9 @@ class HomeScreen extends StatelessWidget {
                           Expanded(
                             child: Slider(
                               value: controller.interestRate.value,
-                              min: 5,
+                              min: 7,
                               max: 15,
-                              divisions: 20,
+                              divisions: 16,
                               onChanged: (value) {
                                 controller.updateInterestRate(value);
                               },
@@ -724,7 +737,11 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _buildTierItem('3+ kW', '₹1,08,000', AppColors.solarOrange),
+                child: _buildTierItem(
+                  '3+ kW',
+                  '₹1,08,000',
+                  AppColors.solarOrange,
+                ),
               ),
             ],
           ),
@@ -752,13 +769,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            amount,
-            style: TextStyle(
-              fontSize: 10,
-              color: color,
-            ),
-          ),
+          Text(amount, style: TextStyle(fontSize: 10, color: color)),
         ],
       ),
     );
