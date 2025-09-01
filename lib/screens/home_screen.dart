@@ -76,7 +76,7 @@ class HomeScreen extends StatelessWidget {
                   Expanded(
                     child: Slider(
                       value: controller.electricityRate.value,
-                      min: 5,
+                      min: 7,
                       max: 15,
                       divisions: 20,
                       onChanged: (value) {
