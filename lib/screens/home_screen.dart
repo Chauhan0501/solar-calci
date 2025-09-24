@@ -186,7 +186,7 @@ class HomeScreen extends StatelessWidget {
                                 value: controller.electricityRate.value,
                                 min: 7,
                                 max: 15,
-                                divisions: 20,
+                                divisions: 16,
                                 onChanged: (value) {
                                   controller.updateElectricityRate(value);
                                 },
