@@ -28,8 +28,54 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            _buildSystemSizeSection(controller, isMobile),
+        Obx(
+              () =>
+          controller.showCalculator.value &&
+              !controller.hasCalculated.value
+              ? _buildSystemSizeSection(controller, isMobile)
+              : SizedBox.shrink()),
             const SizedBox(height: 16),
+            Obx(
+                  () => controller.hasCalculated.value
+                  ? Align(
+                    alignment: Alignment.topRight,
+                    child: InkWell(
+                      onTap: () {
+                        controller.resetCalculation();
+                      },
+                      child: Container(
+                        width: 180,
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 6,
+                              offset: const Offset(0, 3), // shadow position
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Re-Calculate",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  : const SizedBox.shrink(),
+            ),
+
+            SizedBox(height: 10,),
             Obx(
               () => controller.calculatedSystemSize.value > 0
                   ? _buildResultsSection(controller, isMobile)
@@ -51,6 +97,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             Row(
               children: [
                 Expanded(
@@ -75,7 +122,7 @@ class HomeScreen extends StatelessWidget {
                           child: InkWell(
                             onTap: () {
                               controller.calculateSystemSize();
-                              },
+                            },
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
                               decoration: BoxDecoration(
@@ -568,20 +615,6 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
             // Single entry button area controlling flow
-            Obx(
-              () => controller.hasCalculated.value
-                  ? Align(
-                      alignment: Alignment.centerLeft,
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          controller.resetCalculation();
-                        },
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Reset'),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
           ],
         ),
       ),
