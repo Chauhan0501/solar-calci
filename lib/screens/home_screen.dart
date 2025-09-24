@@ -51,16 +51,62 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Obx(
-              () => controller.hasCalculated.value
-                  ? const SizedBox.shrink()
-                  : const Text(
-                      'System Size Estimator',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+            Row(
+              children: [
+                Expanded(
+                  child: Obx(
+                    () => controller.hasCalculated.value
+                        ? const SizedBox.shrink()
+                        : const Text(
+                            'System Size Estimator',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                ),
+                Obx(
+                  () =>
+                      controller.showCalculator.value &&
+                          !controller.hasCalculated.value
+                      ? Align(
+                          alignment: Alignment.centerRight,
+                          child: InkWell(
+                            onTap: () {
+                              controller.calculateSystemSize();
+                              },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.green.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3), // shadow position
+                                  ),
+                                ],
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "Calculate",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
 
@@ -180,7 +226,15 @@ class HomeScreen extends StatelessWidget {
                   controller.showCalculator.value &&
                       !controller.hasCalculated.value
                   ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const Text(
+                          'OR',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         const Text(
                           'Number of Appliances',
                           style: TextStyle(
@@ -515,29 +569,8 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 16),
             // Single entry button area controlling flow
             Obx(
-              () => !controller.showCalculator.value
+              () => controller.hasCalculated.value
                   ? Align(
-                      alignment: Alignment.centerLeft,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          controller.showCalculator.value = true;
-                        },
-                        icon: const Icon(Icons.calculate),
-                        label: const Text('Calculate'),
-                      ),
-                    )
-                  : !controller.hasCalculated.value
-                  ? Align(
-                      alignment: Alignment.centerLeft,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          controller.calculateSystemSize();
-                        },
-                        icon: const Icon(Icons.calculate),
-                        label: const Text('Calculate'),
-                      ),
-                    )
-                  : Align(
                       alignment: Alignment.centerLeft,
                       child: OutlinedButton.icon(
                         onPressed: () {
@@ -546,7 +579,8 @@ class HomeScreen extends StatelessWidget {
                         icon: const Icon(Icons.refresh),
                         label: const Text('Reset'),
                       ),
-                    ),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         ),
