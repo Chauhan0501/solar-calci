@@ -52,6 +52,34 @@ class SystemSizeEstimator extends StatelessWidget {
                     onPressed: controller.hasCalculated.value
                         ? null
                         : () {
+                            final bool hasBillInput =
+                                (controller.monthlyUsageRupees.value > 0) ||
+                                (controller.dailyUsageRupees.value > 0);
+                            final bool hasAnyAppliance =
+                                controller.numberOfTubelights.value > 0 ||
+                                controller.numberOfLights.value > 0 ||
+                                controller.numberOfFans.value > 0 ||
+                                controller.numberOfWallFans.value > 0 ||
+                                controller.numberOfAirCoolers.value > 0 ||
+                                controller.numberOfTVs.value > 0 ||
+                                controller.numberOfRefrigerators.value > 0 ||
+                                controller.numberOfAppliances.value > 0 ||
+                                controller.numberOfWaterPurifiers.value > 0 ||
+                                controller.numberOfSurfacePumps.value > 0 ||
+                                controller.numberOfSubmersiblePumps.value > 0 ||
+                                controller.numberOfACs.value > 0;
+
+                            if (!hasBillInput && !hasAnyAppliance) {
+                              Get.snackbar(
+                                'Missing inputs',
+                                'Please enter your electricity bill or select at least one appliance.',
+                                backgroundColor: AppColors.error,
+                                colorText: Colors.white,
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                              return;
+                            }
+
                             controller.calculateSystemSize();
                           },
                     icon: const Icon(Icons.calculate),

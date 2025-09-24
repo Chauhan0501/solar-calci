@@ -67,6 +67,34 @@ class SolarCalculatorController extends GetxController {
   }
 
   void calculateSystemSize() {
+    // Guard: require either bill input or at least one appliance
+    final bool hasBillInput =
+        (monthlyUsageRupees.value > 0) || (dailyUsageRupees.value > 0);
+    final bool hasAnyAppliance =
+        numberOfTubelights.value > 0 ||
+        numberOfLights.value > 0 ||
+        numberOfFans.value > 0 ||
+        numberOfWallFans.value > 0 ||
+        numberOfAirCoolers.value > 0 ||
+        numberOfTVs.value > 0 ||
+        numberOfRefrigerators.value > 0 ||
+        numberOfAppliances.value > 0 ||
+        numberOfWaterPurifiers.value > 0 ||
+        numberOfSurfacePumps.value > 0 ||
+        numberOfSubmersiblePumps.value > 0 ||
+        numberOfACs.value > 0;
+
+    if (!hasBillInput && !hasAnyAppliance) {
+      Get.snackbar(
+        'Missing inputs',
+        'Please enter your electricity bill or select at least one appliance.',
+        backgroundColor: AppColors.error,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
     // Calculate based on daily usage in rupees
     double dailyUsageKWh;
     if (isMonthlyBill.value) {
@@ -90,7 +118,7 @@ class SolarCalculatorController extends GetxController {
         (numberOfWaterPurifiers.value * 25) + // Water Purifiers: 25W
         (numberOfSurfacePumps.value * 750) + // Surface Pumps: 750W
         (numberOfSubmersiblePumps.value * 1500) + // Submersible Pumps: 1500W
-        (numberOfACs.value * 1500); // Air Conditioners: 1500W
+        (numberOfACs.value * 1000); // Air Conditioners: 1500W
 
     // Convert to daily kWh (assuming 6 hours of usage)
     double applianceDailyKWh = (applianceLoad * 6) / 1000;
@@ -109,13 +137,13 @@ class SolarCalculatorController extends GetxController {
     //   // Up to 3 kW: ₹60 per watt
     //   projectCost.value = (size * 1000 * 60).roundToDouble();
     // } else
-      if (size <= 5.0) {
-        // Up to 5 kW: ₹55 per watt
+    if (size <= 4.9) {
+      // Up to 5 kW: ₹55 per watt
       projectCost.value = (size * 1000 * 55).roundToDouble();
-    } else if (size > 5.0 && size <= 7.5) {
+    } else if (size > 4.9 && size <= 7.4) {
       // 5 to 7.5 kW: ₹54 per watt
       projectCost.value = (size * 1000 * 54).roundToDouble();
-    } else if (size > 7.5 && size <= 10.0) {
+    } else if (size > 7.4 && size <= 9.9) {
       // 7.5 to 10 kW: ₹49 per watt
       projectCost.value = (size * 1000 * 49).roundToDouble();
     } else {
@@ -227,7 +255,7 @@ class SolarCalculatorController extends GetxController {
       ), // 1500W
       ApplianceLoad(
         'Air Conditioners (1.5T)',
-        numberOfACs.value * 1500,
+        numberOfACs.value * 1000,
         AppColors.acColor,
       ), // 1500W
     ];

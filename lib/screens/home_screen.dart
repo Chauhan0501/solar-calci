@@ -436,7 +436,7 @@ class HomeScreen extends StatelessWidget {
                                 child: IgnorePointer(
                                   ignoring: controller.hasCalculated.value,
                                   child: _buildApplianceInput(
-                                    'ACs (1.5T, 1500W)',
+                                    'ACs (1.5T, 1000W)',
                                     controller.numberOfACs.value,
                                     (value) => controller.updateACs(value),
                                     Icons.ac_unit,
