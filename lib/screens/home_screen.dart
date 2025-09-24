@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/solar_calculator_controller.dart';
 import '../constants/app_colors.dart';
-import 'dart:math';
 import 'dart:ui';
 import 'package:intl/intl.dart';
 
@@ -52,47 +51,73 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'System Size Estimator',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Obx(
+              () => controller.hasCalculated.value
+                  ? const SizedBox.shrink()
+                  : const Text(
+                      'System Size Estimator',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
             const SizedBox(height: 16),
 
-            // Electricity Rate
-            const Text(
-              'Electricity Rate per Unit',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
+            // Electricity Rate (visible only while filling)
             Obx(
-              () => Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      '₹${controller.electricityRate.value.toStringAsFixed(1)} per unit',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  Expanded(
-                    child: Slider(
-                      value: controller.electricityRate.value,
-                      min: 7,
-                      max: 15,
-                      divisions: 20,
-                      onChanged: (value) {
-                        controller.updateElectricityRate(value);
-                      },
-                    ),
-                  ),
-                ],
-              ),
+              () =>
+                  controller.showCalculator.value &&
+                      !controller.hasCalculated.value
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Electricity Rate per Unit',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '₹${controller.electricityRate.value.toStringAsFixed(1)} per unit',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            Expanded(
+                              child: Slider(
+                                value: controller.electricityRate.value,
+                                min: 7,
+                                max: 15,
+                                divisions: 20,
+                                onChanged: (value) {
+                                  controller.updateElectricityRate(value);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
             ),
             const SizedBox(height: 16),
 
             // Bill Input Section
-            const Text(
-              'Your Electricity Bill',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Obx(
+              () => controller.hasCalculated.value
+                  ? const SizedBox.shrink()
+                  : const Text(
+                      'Your Electricity Bill',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
             // const SizedBox(height: 8),
             //
@@ -123,277 +148,405 @@ class HomeScreen extends StatelessWidget {
             //   ),
             // ),
             const SizedBox(height: 16),
-            // Bill Amount Input
+            // Bill Amount Input (visible only while filling: showCalculator && !hasCalculated)
             Obx(
-              () => TextField(
-                decoration: InputDecoration(
-                  labelText: controller.isMonthlyBill.value
-                      ? 'Monthly Bill Amount (₹)'
-                      : 'Daily Bill Amount (₹)',
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.currency_rupee),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  if (controller.isMonthlyBill.value) {
-                    controller.updateMonthlyUsage(value);
-                  } else {
-                    // controller.updateDailyUsage(value);
-                  }
-                },
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Appliance Count Inputs
-            const Text(
-              'Number of Appliances',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              () =>
+                  controller.showCalculator.value &&
+                      !controller.hasCalculated.value
+                  ? TextField(
+                      decoration: InputDecoration(
+                        labelText: controller.isMonthlyBill.value
+                            ? 'Monthly Bill Amount (₹)'
+                            : 'Daily Bill Amount (₹)',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.currency_rupee),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        if (controller.isMonthlyBill.value) {
+                          controller.updateMonthlyUsage(value);
+                        } else {
+                          controller.updateDailyUsage(value);
+                        }
+                      },
+                    )
+                  : const SizedBox.shrink(),
             ),
             const SizedBox(height: 16),
+
+            // Appliance Count Inputs (visible only while filling)
             Obx(
-              () => Column(
-                children: [
-                  // Row 1: Lighting
-                  if (isMobile) ...[
-                    _buildApplianceInput(
-                      'Tubelights (18W)',
-                      controller.numberOfTubelights.value,
-                      (value) => controller.updateTubelights(value),
-                      Icons.lightbulb_outline,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildApplianceInput(
-                      'LED Bulbs (9W)',
-                      controller.numberOfLights.value,
-                      (value) => controller.updateLights(value),
-                      Icons.lightbulb,
-                    ),
-                  ] else ...[
-                    Row(
+              () =>
+                  controller.showCalculator.value &&
+                      !controller.hasCalculated.value
+                  ? Column(
                       children: [
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'Tubelights (18W)',
-                            controller.numberOfTubelights.value,
-                            (value) => controller.updateTubelights(value),
-                            Icons.lightbulb_outline,
+                        const Text(
+                          'Number of Appliances',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'LED Bulbs (9W)',
-                            controller.numberOfLights.value,
-                            (value) => controller.updateLights(value),
-                            Icons.lightbulb,
+                        const SizedBox(height: 16),
+                        // Row 1: Lighting
+                        if (isMobile) ...[
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'Tubelights (18W)',
+                              controller.numberOfTubelights.value,
+                              (value) => controller.updateTubelights(value),
+                              Icons.lightbulb_outline,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 12),
+                          const SizedBox(height: 12),
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'LED Bulbs (9W)',
+                              controller.numberOfLights.value,
+                              (value) => controller.updateLights(value),
+                              Icons.lightbulb,
+                            ),
+                          ),
+                        ] else ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'Tubelights (18W)',
+                                    controller.numberOfTubelights.value,
+                                    (value) =>
+                                        controller.updateTubelights(value),
+                                    Icons.lightbulb_outline,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'LED Bulbs (9W)',
+                                    controller.numberOfLights.value,
+                                    (value) => controller.updateLights(value),
+                                    Icons.lightbulb,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 12),
 
-                  // Row 2: Fans
-                  if (isMobile) ...[
-                    _buildApplianceInput(
-                      'Ceiling Fans (75W)',
-                      controller.numberOfFans.value,
-                      (value) => controller.updateFans(value),
-                      Icons.air,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildApplianceInput(
-                      'Wall Fans (55W)',
-                      controller.numberOfWallFans.value,
-                      (value) => controller.updateWallFans(value),
-                      Icons.air,
-                    ),
-                  ] else ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'Ceiling Fans (75W)',
-                            controller.numberOfFans.value,
-                            (value) => controller.updateFans(value),
-                            Icons.air,
+                        // Row 2: Fans
+                        if (isMobile) ...[
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'Ceiling Fans (75W)',
+                              controller.numberOfFans.value,
+                              (value) => controller.updateFans(value),
+                              Icons.air,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'Wall Fans (55W)',
-                            controller.numberOfWallFans.value,
-                            (value) => controller.updateWallFans(value),
-                            Icons.air,
+                          const SizedBox(height: 12),
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'Wall Fans (55W)',
+                              controller.numberOfWallFans.value,
+                              (value) => controller.updateWallFans(value),
+                              Icons.air,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 12),
+                        ] else ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'Ceiling Fans (75W)',
+                                    controller.numberOfFans.value,
+                                    (value) => controller.updateFans(value),
+                                    Icons.air,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'Wall Fans (55W)',
+                                    controller.numberOfWallFans.value,
+                                    (value) => controller.updateWallFans(value),
+                                    Icons.air,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 12),
 
-                  // Row 3: Cooling
-                  if (isMobile) ...[
-                    _buildApplianceInput(
-                      'Air Coolers (150W)',
-                      controller.numberOfAirCoolers.value,
-                      (value) => controller.updateAirCoolers(value),
-                      Icons.ac_unit,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildApplianceInput(
-                      'ACs (1.5T, 1500W)',
-                      controller.numberOfACs.value,
-                      (value) => controller.updateACs(value),
-                      Icons.ac_unit,
-                    ),
-                  ] else ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'Air Coolers (150W)',
-                            controller.numberOfAirCoolers.value,
-                            (value) => controller.updateAirCoolers(value),
-                            Icons.ac_unit,
+                        // Row 3: Cooling
+                        if (isMobile) ...[
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'Air Coolers (150W)',
+                              controller.numberOfAirCoolers.value,
+                              (value) => controller.updateAirCoolers(value),
+                              Icons.ac_unit,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'ACs (1.5T, 1500W)',
-                            controller.numberOfACs.value,
-                            (value) => controller.updateACs(value),
-                            Icons.ac_unit,
+                          const SizedBox(height: 12),
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'ACs (1.5T, 1500W)',
+                              controller.numberOfACs.value,
+                              (value) => controller.updateACs(value),
+                              Icons.ac_unit,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 12),
+                        ] else ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'Air Coolers (150W)',
+                                    controller.numberOfAirCoolers.value,
+                                    (value) =>
+                                        controller.updateAirCoolers(value),
+                                    Icons.ac_unit,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'ACs (1.5T, 1500W)',
+                                    controller.numberOfACs.value,
+                                    (value) => controller.updateACs(value),
+                                    Icons.ac_unit,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 12),
 
-                  // Row 4: Entertainment & Kitchen
-                  if (isMobile) ...[
-                    _buildApplianceInput(
-                      'TVs (32", 60W)',
-                      controller.numberOfTVs.value,
-                      (value) => controller.updateTVs(value),
-                      Icons.tv,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildApplianceInput(
-                      'Refrigerators (180W)',
-                      controller.numberOfRefrigerators.value,
-                      (value) => controller.updateRefrigerators(value),
-                      Icons.kitchen,
-                    ),
-                  ] else ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'TVs (32", 60W)',
-                            controller.numberOfTVs.value,
-                            (value) => controller.updateTVs(value),
-                            Icons.tv,
+                        // Row 4: Entertainment & Kitchen
+                        if (isMobile) ...[
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'TVs (32", 60W)',
+                              controller.numberOfTVs.value,
+                              (value) => controller.updateTVs(value),
+                              Icons.tv,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'Refrigerators (180W)',
-                            controller.numberOfRefrigerators.value,
-                            (value) => controller.updateRefrigerators(value),
-                            Icons.kitchen,
+                          const SizedBox(height: 12),
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'Refrigerators (180W)',
+                              controller.numberOfRefrigerators.value,
+                              (value) => controller.updateRefrigerators(value),
+                              Icons.kitchen,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 12),
+                        ] else ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'TVs (32", 60W)',
+                                    controller.numberOfTVs.value,
+                                    (value) => controller.updateTVs(value),
+                                    Icons.tv,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'Refrigerators (180W)',
+                                    controller.numberOfRefrigerators.value,
+                                    (value) =>
+                                        controller.updateRefrigerators(value),
+                                    Icons.kitchen,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 12),
 
-                  // Row 5: Laundry & Water
-                  if (isMobile) ...[
-                    _buildApplianceInput(
-                      'Washing Machines (500W)',
-                      controller.numberOfAppliances.value,
-                      (value) => controller.updateAppliances(value),
-                      Icons.local_laundry_service,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildApplianceInput(
-                      'Water Purifiers (25W)',
-                      controller.numberOfWaterPurifiers.value,
-                      (value) => controller.updateWaterPurifiers(value),
-                      Icons.water_drop,
-                    ),
-                  ] else ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'Washing Machines (500W)',
-                            controller.numberOfAppliances.value,
-                            (value) => controller.updateAppliances(value),
-                            Icons.local_laundry_service,
+                        // Row 5: Laundry & Water
+                        if (isMobile) ...[
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'Washing Machines (500W)',
+                              controller.numberOfAppliances.value,
+                              (value) => controller.updateAppliances(value),
+                              Icons.local_laundry_service,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'Water Purifiers (25W)',
-                            controller.numberOfWaterPurifiers.value,
-                            (value) => controller.updateWaterPurifiers(value),
-                            Icons.water_drop,
+                          const SizedBox(height: 12),
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'Water Purifiers (25W)',
+                              controller.numberOfWaterPurifiers.value,
+                              (value) => controller.updateWaterPurifiers(value),
+                              Icons.water_drop,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 12),
+                        ] else ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'Washing Machines (500W)',
+                                    controller.numberOfAppliances.value,
+                                    (value) =>
+                                        controller.updateAppliances(value),
+                                    Icons.local_laundry_service,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'Water Purifiers (25W)',
+                                    controller.numberOfWaterPurifiers.value,
+                                    (value) =>
+                                        controller.updateWaterPurifiers(value),
+                                    Icons.water_drop,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 12),
 
-                  // Row 6: Pumps
-                  if (isMobile) ...[
-                    _buildApplianceInput(
-                      'Surface Pumps (750W)',
-                      controller.numberOfSurfacePumps.value,
-                      (value) => controller.updateSurfacePumps(value),
-                      Icons.water,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildApplianceInput(
-                      'Submersible Pumps (1500W)',
-                      controller.numberOfSubmersiblePumps.value,
-                      (value) => controller.updateSubmersiblePumps(value),
-                      Icons.water,
-                    ),
-                  ] else ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'Surface Pumps (750W)',
-                            controller.numberOfSurfacePumps.value,
-                            (value) => controller.updateSurfacePumps(value),
-                            Icons.water,
+                        // Row 6: Pumps
+                        if (isMobile) ...[
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'Surface Pumps (750W)',
+                              controller.numberOfSurfacePumps.value,
+                              (value) => controller.updateSurfacePumps(value),
+                              Icons.water,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildApplianceInput(
-                            'Submersible Pumps (1500W)',
-                            controller.numberOfSubmersiblePumps.value,
-                            (value) => controller.updateSubmersiblePumps(value),
-                            Icons.water,
+                          const SizedBox(height: 12),
+                          IgnorePointer(
+                            ignoring: controller.hasCalculated.value,
+                            child: _buildApplianceInput(
+                              'Submersible Pumps (1500W)',
+                              controller.numberOfSubmersiblePumps.value,
+                              (value) =>
+                                  controller.updateSubmersiblePumps(value),
+                              Icons.water,
+                            ),
                           ),
-                        ),
+                        ] else ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'Surface Pumps (750W)',
+                                    controller.numberOfSurfacePumps.value,
+                                    (value) =>
+                                        controller.updateSurfacePumps(value),
+                                    Icons.water,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: IgnorePointer(
+                                  ignoring: controller.hasCalculated.value,
+                                  child: _buildApplianceInput(
+                                    'Submersible Pumps (1500W)',
+                                    controller.numberOfSubmersiblePumps.value,
+                                    (value) => controller
+                                        .updateSubmersiblePumps(value),
+                                    Icons.water,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
+
+            const SizedBox(height: 16),
+            // Single entry button area controlling flow
+            Obx(
+              () => !controller.showCalculator.value
+                  ? Align(
+                      alignment: Alignment.centerLeft,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          controller.showCalculator.value = true;
+                        },
+                        icon: const Icon(Icons.calculate),
+                        label: const Text('Calculate'),
+                      ),
+                    )
+                  : !controller.hasCalculated.value
+                  ? Align(
+                      alignment: Alignment.centerLeft,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          controller.calculateSystemSize();
+                        },
+                        icon: const Icon(Icons.calculate),
+                        label: const Text('Calculate'),
+                      ),
+                    )
+                  : Align(
+                      alignment: Alignment.centerLeft,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          controller.resetCalculation();
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Reset'),
+                      ),
                     ),
-                  ],
-                ],
-              ),
             ),
           ],
         ),

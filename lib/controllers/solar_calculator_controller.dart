@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'dart:math';
+import 'package:flutter/material.dart';
 import '../models/appliance_load.dart';
 import '../constants/app_colors.dart';
 
@@ -42,10 +43,27 @@ class SolarCalculatorController extends GetxController {
   // Load Chart Data
   RxList<ApplianceLoad> applianceLoads = <ApplianceLoad>[].obs;
 
+  // Text Editing Controller for input
+  TextEditingController inputController = TextEditingController();
+  // Observable field for calculated data
+  RxString calculatedData = ''.obs;
+
+  // Track if calculation has been performed
+  RxBool hasCalculated = false.obs;
+  // Track if calculator fields should be shown (start/edit mode)
+  RxBool showCalculator = true.obs;
+
   @override
   void onInit() {
     super.onInit();
     updateApplianceLoads();
+  }
+
+  void resetCalculation() {
+    hasCalculated.value = false;
+    calculatedSystemSize.value = 0.0;
+    showCalculator.value = true;
+    // Optionally reset other result fields if needed
   }
 
   void calculateSystemSize() {
@@ -137,6 +155,8 @@ class SolarCalculatorController extends GetxController {
 
     // Update appliance loads for chart
     updateApplianceLoads();
+
+    hasCalculated.value = true;
   }
 
   void updateApplianceLoads() {
@@ -231,87 +251,70 @@ class SolarCalculatorController extends GetxController {
   // Methods to update values
   void updateDailyUsage(String value) {
     dailyUsageRupees.value = double.tryParse(value) ?? 0;
-    calculateSystemSize();
   }
 
   void updateMonthlyUsage(String value) {
     monthlyUsageRupees.value = double.tryParse(value) ?? 0;
-    calculateSystemSize();
   }
 
   void updateElectricityRate(double value) {
     electricityRate.value = value;
-    calculateSystemSize();
   }
 
   void updateBillType(bool isMonthly) {
     isMonthlyBill.value = isMonthly;
-    calculateSystemSize();
   }
 
   void updateFans(int value) {
     numberOfFans.value = value;
-    calculateSystemSize();
   }
 
   void updateLights(int value) {
     numberOfLights.value = value;
-    calculateSystemSize();
   }
 
   void updateACs(int value) {
     numberOfACs.value = value;
-    calculateSystemSize();
   }
 
   void updateAppliances(int value) {
     numberOfAppliances.value = value;
-    calculateSystemSize();
   }
 
   void updateTubelights(int value) {
     numberOfTubelights.value = value;
-    calculateSystemSize();
   }
 
   void updateWallFans(int value) {
     numberOfWallFans.value = value;
-    calculateSystemSize();
   }
 
   void updateAirCoolers(int value) {
     numberOfAirCoolers.value = value;
-    calculateSystemSize();
   }
 
   void updateTVs(int value) {
     numberOfTVs.value = value;
-    calculateSystemSize();
   }
 
   void updateRefrigerators(int value) {
     numberOfRefrigerators.value = value;
-    calculateSystemSize();
   }
 
   void updateWaterPurifiers(int value) {
     numberOfWaterPurifiers.value = value;
-    calculateSystemSize();
   }
 
   void updateSurfacePumps(int value) {
     numberOfSurfacePumps.value = value;
-    calculateSystemSize();
   }
 
   void updateSubmersiblePumps(int value) {
     numberOfSubmersiblePumps.value = value;
-    calculateSystemSize();
   }
 
   void updateSubsidyAmount(double value) {
     subsidyAmount.value = value;
-    calculateSystemSize();
   }
 
   void updateEmiTenure(double value) {
@@ -320,5 +323,12 @@ class SolarCalculatorController extends GetxController {
 
   void updateInterestRate(double value) {
     interestRate.value = value;
+  }
+
+  // Method to calculate data based on input
+  void calculateData() {
+    // Example calculation logic
+    double input = double.tryParse(inputController.text) ?? 0;
+    calculatedData.value = 'Calculated: ${input * 2}';
   }
 }

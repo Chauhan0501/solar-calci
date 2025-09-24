@@ -16,23 +16,61 @@ class SystemSizeEstimator extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'System Size Estimator',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Calculate solar system size based on your electricity usage',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
+          IgnorePointer(
+            ignoring: controller.hasCalculated.value,
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'System Size Estimator',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Calculate solar system size based on your electricity usage',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Calculate / Reset Buttons
+          Obx(
+            () => Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: controller.hasCalculated.value
+                        ? null
+                        : () {
+                            controller.calculateSystemSize();
+                          },
+                    icon: const Icon(Icons.calculate),
+                    label: const Text('Calculate'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: controller.hasCalculated.value
+                        ? () {
+                            controller.resetCalculation();
+                          }
+                        : null,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Reset'),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
@@ -143,22 +181,51 @@ class SystemSizeEstimator extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Obx(
-                    () => TextField(
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        hintText: controller.isMonthlyBill.value
-                            ? 'Enter monthly electricity bill in rupees'
-                            : 'Enter daily electricity bill in rupees',
-                      ),
-                      onChanged: (value) {
-                        if (controller.isMonthlyBill.value) {
-                          controller.updateMonthlyUsage(value);
-                        } else {
-                          controller.updateDailyUsage(value);
-                        }
-                      },
-                    ),
+                    () => controller.hasCalculated.value
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.divider),
+                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.background,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.receipt_long),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    controller.isMonthlyBill.value
+                                        ? 'Monthly Bill: ₹${controller.monthlyUsageRupees.value.toStringAsFixed(0)}'
+                                        : 'Daily Bill: ₹${controller.dailyUsageRupees.value.toStringAsFixed(0)}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              hintText: controller.isMonthlyBill.value
+                                  ? 'Enter monthly electricity bill in rupees'
+                                  : 'Enter daily electricity bill in rupees',
+                            ),
+                            onChanged: (value) {
+                              if (controller.isMonthlyBill.value) {
+                                controller.updateMonthlyUsage(value);
+                              } else {
+                                controller.updateDailyUsage(value);
+                              }
+                            },
+                          ),
                   ),
                 ],
               ),
