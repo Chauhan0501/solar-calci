@@ -104,14 +104,23 @@ class SolarCalculatorController extends GetxController {
     calculatedSystemSize.value = requiredDailyKWh / (4.5 * 0.75);
 
     // Calculate project cost based on tiered pricing
-    if (calculatedSystemSize.value <= 3.0) {
-      // Up to 3 kW: ₹60 per watt
-      projectCost.value = (calculatedSystemSize.value * 1000 * 60)
-          .roundToDouble();
+    double size = calculatedSystemSize.value;
+    // if (size <= 3.0) {
+    //   // Up to 3 kW: ₹60 per watt
+    //   projectCost.value = (size * 1000 * 60).roundToDouble();
+    // } else
+      if (size <= 5.0) {
+        // Up to 5 kW: ₹55 per watt
+      projectCost.value = (size * 1000 * 55).roundToDouble();
+    } else if (size > 5.0 && size <= 7.5) {
+      // 5 to 7.5 kW: ₹54 per watt
+      projectCost.value = (size * 1000 * 54).roundToDouble();
+    } else if (size > 7.5 && size <= 10.0) {
+      // 7.5 to 10 kW: ₹49 per watt
+      projectCost.value = (size * 1000 * 49).roundToDouble();
     } else {
-      // Above 3 kW: ₹55 per watt
-      projectCost.value = (calculatedSystemSize.value * 1000 * 55)
-          .roundToDouble();
+      // Above 10 kW: ₹47 per watt
+      projectCost.value = (size * 1000 * 47).roundToDouble();
     }
 
     // Calculate monthly savings
