@@ -261,6 +261,25 @@ class SystemSizeEstimator extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
+          // Centered OR separator
+          Row(
+            children: [
+              const Expanded(child: Divider()),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  'OR',
+                  style: const TextStyle(
+                    color: AppColors.error,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Expanded(child: Divider()),
+            ],
+          ),
+          const SizedBox(height: 16),
+
           // Appliance Count Inputs
           Card(
             child: Padding(

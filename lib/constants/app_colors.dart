@@ -25,6 +25,7 @@ class AppColors {
   static const Color error = Color(0xFFF44336); // Red
   static const Color errorLight = Color(0xFFE57373);
   static const Color errorDark = Color(0xFFD32F2F);
+  static const Color saffron = Color(0xFFff671f);
 
   // Info Colors
   static const Color info = Color(0xFF9C27B0); // Purple

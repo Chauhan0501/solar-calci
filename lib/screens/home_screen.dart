@@ -28,54 +28,58 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-        Obx(
+            Obx(
               () =>
-          controller.showCalculator.value &&
-              !controller.hasCalculated.value
-              ? _buildSystemSizeSection(controller, isMobile)
-              : SizedBox.shrink()),
+                  controller.showCalculator.value &&
+                      !controller.hasCalculated.value
+                  ? _buildSystemSizeSection(controller, isMobile)
+                  : SizedBox.shrink(),
+            ),
             const SizedBox(height: 16),
             Obx(
-                  () => controller.hasCalculated.value
+              () => controller.hasCalculated.value
                   ? Align(
-                    alignment: Alignment.topRight,
-                    child: InkWell(
-                      onTap: () {
-                        controller.resetCalculation();
-                      },
-                      child: Container(
-                        width: 180,
-                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.green.withOpacity(0.3),
-                              spreadRadius: 2,
-                              blurRadius: 6,
-                              offset: const Offset(0, 3), // shadow position
-                            ),
-                          ],
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Re-Calculate",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1,
+                      alignment: Alignment.topRight,
+                      child: InkWell(
+                        onTap: () {
+                          controller.resetCalculation();
+                        },
+                        child: Container(
+                          width: 180,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 24,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withOpacity(0.3),
+                                spreadRadius: 2,
+                                blurRadius: 6,
+                                offset: const Offset(0, 3), // shadow position
+                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Re-Calculate",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  )
+                    )
                   : const SizedBox.shrink(),
             ),
 
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             Obx(
               () => controller.calculatedSystemSize.value > 0
                   ? _buildResultsSection(controller, isMobile)
@@ -97,7 +101,6 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             Row(
               children: [
                 Expanded(
@@ -121,10 +124,42 @@ class HomeScreen extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InkWell(
                             onTap: () {
+                              final bool hasBillInput =
+                                  (controller.monthlyUsageRupees.value > 0) ||
+                                  (controller.dailyUsageRupees.value > 0);
+                              final bool hasAnyAppliance =
+                                  controller.numberOfTubelights.value > 0 ||
+                                  controller.numberOfLights.value > 0 ||
+                                  controller.numberOfFans.value > 0 ||
+                                  controller.numberOfWallFans.value > 0 ||
+                                  controller.numberOfAirCoolers.value > 0 ||
+                                  controller.numberOfTVs.value > 0 ||
+                                  controller.numberOfRefrigerators.value > 0 ||
+                                  controller.numberOfAppliances.value > 0 ||
+                                  controller.numberOfWaterPurifiers.value > 0 ||
+                                  controller.numberOfSurfacePumps.value > 0 ||
+                                  controller.numberOfSubmersiblePumps.value >
+                                      0 ||
+                                  controller.numberOfACs.value > 0;
+
+                              if (!hasBillInput && !hasAnyAppliance) {
+                                Get.snackbar(
+                                  'Missing inputs',
+                                  'Please enter your electricity bill or select at least one appliance.',
+                                  backgroundColor: AppColors.error,
+                                  colorText: Colors.white,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                                return;
+                              }
+
                               controller.calculateSystemSize();
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                                horizontal: 24,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.primary,
                                 borderRadius: BorderRadius.circular(12),
@@ -133,7 +168,10 @@ class HomeScreen extends StatelessWidget {
                                     color: Colors.green.withOpacity(0.3),
                                     spreadRadius: 2,
                                     blurRadius: 6,
-                                    offset: const Offset(0, 3), // shadow position
+                                    offset: const Offset(
+                                      0,
+                                      3,
+                                    ), // shadow position
                                   ),
                                 ],
                               ),
@@ -275,12 +313,24 @@ class HomeScreen extends StatelessWidget {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'OR',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            const Expanded(child: Divider()),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              child: const Text(
+                                'OR',
+                                style: TextStyle(
+                                  fontSize:25,
+                                  color: AppColors.saffron,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const Expanded(child: Divider()),
+                          ],
                         ),
                         const Text(
                           'Number of Appliances',
